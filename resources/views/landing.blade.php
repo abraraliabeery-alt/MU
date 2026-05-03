@@ -6,7 +6,7 @@
 @section('og_description', app()->getLocale() === 'ar' ? 'محامٍ مرخص وموثق معتمد—حلول قانونية واضحة وثقة في كل خطوة.' : 'Licensed lawyer & registered notary—clear legal solutions and confidence at every step.')
 
 @php
-    $whatsAppNumber = '966500000000';
+    $whatsAppNumber = '966530583313';
     $whatsAppMessage = app()->getLocale() === 'ar' ? 'مرحبًا، أود طلب استشارة قانونية.' : 'Hi, I would like to request a legal consultation.';
     $whatsAppUrl = 'https://wa.me/' . $whatsAppNumber . '?text=' . urlencode($whatsAppMessage);
 @endphp
@@ -313,7 +313,7 @@
                         <div class="mt-6 grid gap-3 text-sm">
                             <div class="contact-item">
                                 <div class="contact-k">{{ app()->getLocale() === 'ar' ? 'واتساب' : 'WhatsApp' }}</div>
-                                <div class="contact-v">+966 50 000 0000</div>
+                                <div class="contact-v">00966530583313</div>
                             </div>
                             <div class="contact-item">
                                 <div class="contact-k">{{ app()->getLocale() === 'ar' ? 'الهاتف' : 'Phone' }}</div>
@@ -332,38 +332,78 @@
 
                     <div class="lg:col-span-7">
                         <div class="form-card">
-                            <form class="grid gap-4" action="#" method="POST" novalidate>
+                            @if (session('contact_success'))
+                                <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--card)] px-4 py-3 text-sm">
+                                    {{ session('contact_message') }}
+                                </div>
+                            @endif
+
+                            <form class="grid gap-4" action="{{ route('contact.store') }}" method="POST" novalidate>
+                                @csrf
                                 <div class="grid gap-4 sm:grid-cols-2">
                                     <div>
                                         <label class="label" for="name">{{ app()->getLocale() === 'ar' ? 'الاسم' : 'Name' }}</label>
-                                        <input class="input" id="name" name="name" autocomplete="name" required>
+                                        <input class="input" id="name" name="name" value="{{ old('name') }}" autocomplete="name" required>
+                                        @error('name')
+                                            <div class="mt-1 text-xs text-red-600">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div>
                                         <label class="label" for="phone">{{ app()->getLocale() === 'ar' ? 'رقم الجوال' : 'Phone' }}</label>
-                                        <input class="input" id="phone" name="phone" inputmode="tel" autocomplete="tel" required>
+                                        <input class="input" id="phone" name="phone" value="{{ old('phone') }}" inputmode="tel" autocomplete="tel" required>
+                                        @error('phone')
+                                            <div class="mt-1 text-xs text-red-600">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
 
                                 <div class="grid gap-4 sm:grid-cols-2">
                                     <div>
                                         <label class="label" for="email">{{ app()->getLocale() === 'ar' ? 'البريد الإلكتروني' : 'Email' }}</label>
-                                        <input class="input" id="email" name="email" type="email" autocomplete="email" required>
+                                        <input class="input" id="email" name="email" value="{{ old('email') }}" type="email" autocomplete="email" required>
+                                        @error('email')
+                                            <div class="mt-1 text-xs text-red-600">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     <div>
                                         <label class="label" for="service">{{ app()->getLocale() === 'ar' ? 'الخدمة المطلوبة' : 'Service' }}</label>
-                                        <select class="select" id="service" name="service" required>
-                                            <option value="" selected disabled>{{ app()->getLocale() === 'ar' ? 'اختر الخدمة' : 'Select service' }}</option>
-                                            <option value="consult">{{ app()->getLocale() === 'ar' ? 'استشارة' : 'Consultation' }}</option>
-                                            <option value="notary">{{ app()->getLocale() === 'ar' ? 'توثيق' : 'Notarization' }}</option>
-                                            <option value="contract">{{ app()->getLocale() === 'ar' ? 'عقد / صياغة' : 'Contract / Drafting' }}</option>
-                                            <option value="case">{{ app()->getLocale() === 'ar' ? 'قضية / تمثيل' : 'Case / Representation' }}</option>
-                                        </select>
+                                        @php
+                                            $serviceOld = old('service');
+                                            $serviceLabel = match ($serviceOld) {
+                                                'consult' => (app()->getLocale() === 'ar' ? 'استشارة' : 'Consultation'),
+                                                'notary' => (app()->getLocale() === 'ar' ? 'توثيق' : 'Notarization'),
+                                                'contract' => (app()->getLocale() === 'ar' ? 'عقد / صياغة' : 'Contract / Drafting'),
+                                                'case' => (app()->getLocale() === 'ar' ? 'قضية / تمثيل' : 'Case / Representation'),
+                                                default => (app()->getLocale() === 'ar' ? 'اختر الخدمة' : 'Select service'),
+                                            };
+                                        @endphp
+
+                                        <div class="relative" data-service-select>
+                                            <input type="hidden" name="service" value="{{ $serviceOld }}" data-service-select-value>
+                                            <button type="button" class="select flex items-center justify-between" id="service" data-service-select-button aria-haspopup="listbox" aria-expanded="false">
+                                                <span data-service-select-label>{{ $serviceLabel }}</span>
+                                                <span aria-hidden="true" class="text-[color:var(--muted)]">▾</span>
+                                            </button>
+
+                                            <div class="absolute z-20 mt-2 w-full overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[color:var(--card)] shadow-soft" data-service-select-menu hidden>
+                                                <button type="button" class="w-full px-4 py-3 text-sm text-start hover:bg-[color:var(--bg)]" data-value="consult" role="option">{{ app()->getLocale() === 'ar' ? 'استشارة' : 'Consultation' }}</button>
+                                                <button type="button" class="w-full px-4 py-3 text-sm text-start hover:bg-[color:var(--bg)]" data-value="notary" role="option">{{ app()->getLocale() === 'ar' ? 'توثيق' : 'Notarization' }}</button>
+                                                <button type="button" class="w-full px-4 py-3 text-sm text-start hover:bg-[color:var(--bg)]" data-value="contract" role="option">{{ app()->getLocale() === 'ar' ? 'عقد / صياغة' : 'Contract / Drafting' }}</button>
+                                                <button type="button" class="w-full px-4 py-3 text-sm text-start hover:bg-[color:var(--bg)]" data-value="case" role="option">{{ app()->getLocale() === 'ar' ? 'قضية / تمثيل' : 'Case / Representation' }}</button>
+                                            </div>
+                                        </div>
+                                        @error('service')
+                                            <div class="mt-1 text-xs text-red-600">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
 
                                 <div>
                                     <label class="label" for="notes">{{ app()->getLocale() === 'ar' ? 'تفاصيل الطلب' : 'Request details' }}</label>
-                                    <textarea class="textarea" id="notes" name="notes" rows="4"></textarea>
+                                    <textarea class="textarea" id="notes" name="notes" rows="4">{{ old('notes') }}</textarea>
+                                    @error('notes')
+                                        <div class="mt-1 text-xs text-red-600">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
                                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -429,7 +469,7 @@
                         </div>
                         <div class="grid gap-2">
                             <div class="footer-title">{{ app()->getLocale() === 'ar' ? 'التواصل' : 'Contact' }}</div>
-                            <div class="footer-meta">+966 50 000 0000</div>
+                            <div class="footer-meta">00966530583313</div>
                             <div class="footer-meta">hello@example.com</div>
                         </div>
                         <div class="grid gap-2">
@@ -488,4 +528,58 @@
         </a>
     </main>
 </div>
+@push('scripts')
+    <script>
+        (function () {
+            function setup(root) {
+                var btn = root.querySelector('[data-service-select-button]');
+                var menu = root.querySelector('[data-service-select-menu]');
+                var valueInput = root.querySelector('[data-service-select-value]');
+                var label = root.querySelector('[data-service-select-label]');
+                if (!btn || !menu || !valueInput || !label) return;
+
+                function open() {
+                    menu.removeAttribute('hidden');
+                    btn.setAttribute('aria-expanded', 'true');
+                }
+
+                function close() {
+                    menu.setAttribute('hidden', 'hidden');
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+
+                function toggle() {
+                    if (menu.hasAttribute('hidden')) open();
+                    else close();
+                }
+
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    toggle();
+                });
+
+                menu.querySelectorAll('button[data-value]').forEach(function (item) {
+                    item.addEventListener('click', function () {
+                        var val = item.getAttribute('data-value') || '';
+                        valueInput.value = val;
+                        label.textContent = item.textContent || '';
+                        close();
+                    });
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!root.contains(e.target)) close();
+                });
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') close();
+                });
+            }
+
+            window.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('[data-service-select]').forEach(setup);
+            });
+        })();
+    </script>
+@endpush
 @endsection

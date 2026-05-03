@@ -226,6 +226,20 @@
         color: var(--fg);
     }
 
+    .select option,
+    .select optgroup {
+        background: var(--bg);
+        color: var(--fg);
+    }
+
+    html[data-theme='dark'] .select {
+        color-scheme: dark;
+    }
+
+    html[data-theme='light'] .select {
+        color-scheme: light;
+    }
+
     .textarea {
         @apply py-3;
         resize: vertical;
