@@ -320,7 +320,7 @@
                             </div>
                             <div class="contact-item">
                                 <div class="contact-k">{{ app()->getLocale() === 'ar' ? 'البريد' : 'Email' }}</div>
-                                <div class="contact-v">hello@example.com</div>
+                                <div class="contact-v">info@almaymouni.com</div>
                             </div>
                             <div class="contact-item">
                                 <div class="contact-k">{{ app()->getLocale() === 'ar' ? 'المدينة' : 'City' }}</div>
@@ -461,7 +461,7 @@
                         <div class="grid gap-2">
                             <div class="footer-title">{{ app()->getLocale() === 'ar' ? 'التواصل' : 'Contact' }}</div>
                             <div class="footer-meta">00966530583313</div>
-                            <div class="footer-meta">hello@example.com</div>
+                            <div class="footer-meta">info@almaymouni.com</div>
                         </div>
                         <div class="grid gap-2">
                             <div class="footer-title">{{ app()->getLocale() === 'ar' ? 'اللغة' : 'Language' }}</div>
