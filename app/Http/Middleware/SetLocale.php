@@ -22,6 +22,8 @@ class SetLocale
         $sessionLang = $request->session()->get('lang');
         if ($sessionLang === 'ar' || $sessionLang === 'en') {
             app()->setLocale($sessionLang);
+        } else {
+            app()->setLocale(config('app.locale'));
         }
 
         return $next($request);
