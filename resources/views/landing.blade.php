@@ -43,6 +43,11 @@
                                 <span class="theme-icon theme-icon-moon">◐</span>
                             </button>
 
+                            <a href="{{ route('admin.login', ['lang' => app()->getLocale()]) }}" class="chip h-10 !py-0 px-4" title="{{ app()->getLocale() === 'ar' ? 'تسجيل الدخول' : 'Login' }}" aria-label="{{ app()->getLocale() === 'ar' ? 'تسجيل الدخول' : 'Login' }}">
+                                <svg class="h-5 w-5" aria-hidden="true"><use href="#i-shield" /></svg>
+                                <span class="sr-only">{{ app()->getLocale() === 'ar' ? 'تسجيل الدخول' : 'Login' }}</span>
+                            </a>
+
                             <a href="{{ request()->fullUrlWithQuery(['lang' => app()->getLocale() === 'ar' ? 'en' : 'ar']) }}" class="chip h-10 !py-0 px-4">
                                 {{ app()->getLocale() === 'ar' ? 'EN' : 'ع' }}
                             </a>
