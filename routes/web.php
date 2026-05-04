@@ -2,12 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContactMessageController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\Admin\ContactMessageAdminController;
 use App\Http\Controllers\Admin\AdminAuthController;
 
-Route::get('/', function () {
-    return view('landing');
-})->name('landing');
+Route::get('/', LandingController::class)->name('landing');
 
 Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.store');
 

@@ -5,12 +5,6 @@
 @section('og_title', app()->getLocale() === 'ar' ? 'الميموني للمحاماة والاستشارات القانونية' : 'Al‑Maimouni Law Firm & Legal Consultations')
 @section('og_description', app()->getLocale() === 'ar' ? 'محامٍ مرخص وموثق معتمد—حلول قانونية واضحة وثقة في كل خطوة.' : 'Licensed lawyer & registered notary—clear legal solutions and confidence at every step.')
 
-@php
-    $whatsAppNumber = '966530583313';
-    $whatsAppMessage = app()->getLocale() === 'ar' ? 'مرحبًا، أود طلب استشارة قانونية.' : 'Hi, I would like to request a legal consultation.';
-    $whatsAppUrl = 'https://wa.me/' . $whatsAppNumber . '?text=' . urlencode($whatsAppMessage);
-@endphp
-
 @section('body')
 <div class="min-h-screen bg-[color:var(--bg)] text-[color:var(--fg)]">
     <a href="#content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:start-4 focus:z-50 focus:rounded-xl focus:bg-[color:var(--card)] focus:px-4 focus:py-2 focus:ring-2 focus:ring-[color:var(--ring)]">
@@ -372,29 +366,21 @@
                                     </div>
                                     <div>
                                         <label class="label" for="service">{{ app()->getLocale() === 'ar' ? 'الخدمة المطلوبة' : 'Service' }}</label>
-                                        @php
-                                            $serviceOld = old('service');
-                                            $serviceLabel = match ($serviceOld) {
-                                                'consult' => (app()->getLocale() === 'ar' ? 'استشارة' : 'Consultation'),
-                                                'notary' => (app()->getLocale() === 'ar' ? 'توثيق' : 'Notarization'),
-                                                'contract' => (app()->getLocale() === 'ar' ? 'عقد / صياغة' : 'Contract / Drafting'),
-                                                'case' => (app()->getLocale() === 'ar' ? 'قضية / تمثيل' : 'Case / Representation'),
-                                                default => (app()->getLocale() === 'ar' ? 'اختر الخدمة' : 'Select service'),
-                                            };
-                                        @endphp
-
                                         <div class="relative" data-service-select>
-                                            <input type="hidden" name="service" value="{{ $serviceOld }}" data-service-select-value>
+                                            <input type="hidden" name="service" value="{{ old('service') }}" data-service-select-value>
                                             <button type="button" class="select flex items-center justify-between" id="service" data-service-select-button aria-haspopup="listbox" aria-expanded="false">
-                                                <span data-service-select-label>{{ $serviceLabel }}</span>
+                                                <span data-service-select-label>
+                                                    {{ app()->getLocale() === 'ar' ? 'اختر الخدمة' : 'Select service' }}
+                                                </span>
                                                 <span aria-hidden="true" class="text-[color:var(--muted)]">▾</span>
                                             </button>
 
                                             <div class="absolute z-20 mt-2 w-full overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[color:var(--card)] shadow-soft" data-service-select-menu hidden>
-                                                <button type="button" class="w-full px-4 py-3 text-sm text-start hover:bg-[color:var(--bg)]" data-value="consult" role="option">{{ app()->getLocale() === 'ar' ? 'استشارة' : 'Consultation' }}</button>
-                                                <button type="button" class="w-full px-4 py-3 text-sm text-start hover:bg-[color:var(--bg)]" data-value="notary" role="option">{{ app()->getLocale() === 'ar' ? 'توثيق' : 'Notarization' }}</button>
-                                                <button type="button" class="w-full px-4 py-3 text-sm text-start hover:bg-[color:var(--bg)]" data-value="contract" role="option">{{ app()->getLocale() === 'ar' ? 'عقد / صياغة' : 'Contract / Drafting' }}</button>
-                                                <button type="button" class="w-full px-4 py-3 text-sm text-start hover:bg-[color:var(--bg)]" data-value="case" role="option">{{ app()->getLocale() === 'ar' ? 'قضية / تمثيل' : 'Case / Representation' }}</button>
+                                                @foreach ($services as $service)
+                                                    <button type="button" class="w-full px-4 py-3 text-sm text-start hover:bg-[color:var(--bg)]" data-value="{{ $service['value'] }}" role="option">
+                                                        {{ app()->getLocale() === 'ar' ? $service['label_ar'] : $service['label_en'] }}
+                                                    </button>
+                                                @endforeach
                                             </div>
                                         </div>
                                         @error('service')
@@ -542,6 +528,14 @@
                 var valueInput = root.querySelector('[data-service-select-value]');
                 var label = root.querySelector('[data-service-select-label]');
                 if (!btn || !menu || !valueInput || !label) return;
+
+                var initialValue = valueInput.value;
+                if (initialValue) {
+                    var initialItem = menu.querySelector('button[data-value="' + CSS.escape(initialValue) + '"]');
+                    if (initialItem) {
+                        label.textContent = initialItem.textContent || label.textContent;
+                    }
+                }
 
                 function open() {
                     menu.removeAttribute('hidden');
